@@ -1,0 +1,8 @@
+.nav-pills>li>a.active .badge-wrapper.bullet span.badge-category {
+  color: $secondary;
+}
+
+.nav-pills>li>a .badge-wrapper.bullet span.badge-category {
+  font-weight: normal;
+  font-size: 14px;
+}
