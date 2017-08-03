@@ -56,8 +56,9 @@ after_initialize do
 
     def update_category_counters
       if PostActionType.notify_flag_type_ids.include?(post_action_type_id)
-        post = Post.find(post_id)
-        PostAction.update_category_flagged_posts_count(post.topic.category_id)
+        post = Post.with_deleted.find(post_id)
+        category_id = post ? post.topic.category_id : nil
+        PostAction.update_category_flagged_posts_count(category_id)
       end
     end
 
