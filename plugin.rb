@@ -17,6 +17,8 @@ after_initialize do
     end
 
     def update_category_moderators
+      UserCustomField.where(name: 'moderator_category_id', value: self.id).destroy_all
+
       category_moderators.split(',').each do |u|
         user = User.find_by(username: u)
         user.custom_fields['moderator_category_id'] = self.id
