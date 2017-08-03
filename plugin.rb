@@ -29,12 +29,16 @@ after_initialize do
   CurrentUserSerializer.class_eval do
     attributes :moderator_category_id, :category_flagged_posts_count
 
+    def include_moderator_category_id?
+      object.moderator?
+    end
+
     def moderator_category_id
       object.custom_fields['moderator_category_id']
     end
 
     def include_category_flagged_posts_count?
-      !!moderator_category_id
+      object.moderator? && !!moderator_category_id
     end
 
     def category_flagged_posts_count
