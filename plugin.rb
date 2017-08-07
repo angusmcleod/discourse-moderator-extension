@@ -10,7 +10,7 @@ after_initialize do
 
   require_dependency 'category'
   Category.class_eval do
-    after_save :update_category_moderators
+    after_save :update_category_moderators, if: :category_moderators
 
     def category_moderators
       self.custom_fields['category_moderators']
