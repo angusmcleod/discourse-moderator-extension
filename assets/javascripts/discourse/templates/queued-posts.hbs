@@ -1,9 +1,9 @@
-{{#if moderatorCategory}}
-  {{#admin-nav}}
+{{#admin-nav}}
+  {{#if moderatorCategory}}
     {{nav-item route='queued-posts.list' routeParam='category' i18nLabel=(category-badge moderatorCategory)}}
-    {{nav-item route='queued-posts.list' routeParam='all' label='queue.all'}}
-  {{/admin-nav}}
-{{/if}}
+  {{/if}}
+  {{nav-item route='queued-posts.list' routeParam='all' label='queue.all'}}
+{{/admin-nav}}
 
 <div class="admin-container">
   {{outlet}}
