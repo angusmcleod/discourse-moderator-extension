@@ -1,5 +1,4 @@
 import { withPluginApi } from 'discourse/lib/plugin-api';
-import { addFlagProperty } from 'discourse/components/site-header';
 import { observes } from 'ember-addons/ember-computed-decorators';
 import SiteHeader from 'discourse/components/site-header';
 
@@ -13,7 +12,7 @@ export default {
 
     if (user && user.get('moderator_category_id')) {
 
-      bus.unsubscribe('/flagged_counts')
+      bus.unsubscribe('/flagged_counts');
       bus.subscribe('/category_flagged_counts', data => {
         user.set('category_flagged_posts_count', data.total);
       });
@@ -31,7 +30,7 @@ export default {
         refreshCategoryFlagCount() {
           this.queueRerender();
         }
-      })
+      });
 
       withPluginApi('0.8.8', api => {
         api.reopenWidget('hamburger-menu', {
@@ -64,8 +63,8 @@ export default {
 
             return links.map(l => this.attach('link', l));
           }
-        })
-      })
+        });
+      });
 
       const AdminFlagIndexRoute = requirejs('admin/routes/admin-flags-index').default;
       const AdminFlagListRoute = requirejs('admin/routes/admin-flags-list').default;
@@ -77,27 +76,27 @@ export default {
           let filter = moderatorCategoryId ? 'category' : 'active';
           this.replaceWith('adminFlags.list', filter);
         }
-      })
+      });
 
       AdminFlagListRoute.reopen({
         setupController(controller, model) {
           const moderatorCategoryId = this.get('currentUser.moderator_category_id');
           let posts = model;
 
-          if (this.filter == 'category' && moderatorCategoryId) {
+          if (this.filter === 'category' && moderatorCategoryId) {
             posts = model.filter((p) => {
               return p.topicLookup[p.topic_id].category_id === moderatorCategoryId;
-            })
+            });
           }
 
           controller.set('model', posts);
           controller.set('query', this.filter);
         }
-      })
+      });
 
       AdminFlagListController.reopen({
         adminCategoryFlagsView: Em.computed.equal("query", "category")
-      })
+      });
     }
   }
-}
+};

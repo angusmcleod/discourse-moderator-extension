@@ -22,7 +22,7 @@ after_initialize do
       category_moderators.split(',').each do |u|
         user = User.find_by(username: u)
         user.custom_fields['moderator_category_id'] = self.id
-        user.save!
+        user.save_custom_fields(true)
       end
     end
   end
@@ -48,7 +48,7 @@ after_initialize do
     end
   end
 
-  add_to_serializer(:flagged_topic, :category_id) {object.category_id}
+  add_to_serializer(:flagged_topic, :category_id) { object.category_id }
 
   require_dependency 'post_action'
   PostAction.class_eval do
