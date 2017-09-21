@@ -1,0 +1,10 @@
+{{#if moderatorCategory}}
+  {{#admin-nav}}
+    {{nav-item route='queued-posts.list' routeParam='category' i18nLabel=(category-badge moderatorCategory)}}
+    {{nav-item route='queued-posts.list' routeParam='all' label='queue.all'}}
+  {{/admin-nav}}
+{{/if}}
+
+<div class="admin-container">
+  {{outlet}}
+</div>

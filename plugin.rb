@@ -12,6 +12,10 @@ after_initialize do
   Category.class_eval do
     after_save :update_category_moderators, if: :category_moderators
 
+    def has_category_moderators?
+      category_moderators && category_moderators.length > 0
+    end
+
     def category_moderators
       self.custom_fields['category_moderators']
     end
@@ -29,7 +33,9 @@ after_initialize do
 
   require_dependency 'current_user_serializer'
   CurrentUserSerializer.class_eval do
-    attributes :moderator_category_id, :category_flagged_posts_count
+    attributes :moderator_category_id,
+               :category_flagged_posts_count,
+               :post_queue_new_category_count
 
     def include_moderator_category_id?
       object.moderator?
@@ -45,6 +51,14 @@ after_initialize do
 
     def category_flagged_posts_count
       PostAction.category_flagged_posts_count(moderator_category_id)
+    end
+
+    def include_post_queue_new_category_count?
+      object.moderator? && !!moderator_category_id
+    end
+
+    def post_queue_new_category_count
+      QueuedPost.new_category_count(moderator_category_id)
     end
   end
 
@@ -99,5 +113,46 @@ after_initialize do
       PostAction.update_flagged_posts_count
       PostAction.update_category_flagged_posts_count(category_id)
     end
+  end
+
+  module CategoryModExtension
+    def enqueue(queue, reason = nil)
+      result = super(queue, reason)
+      post = result.queued_post
+      category_id = post['post_options']['category']
+
+      if category_id.length > 0
+        category = Category.find(category_id)
+
+        if category && category.has_category_moderators?
+          QueuedPost.broadcast_category_new!(category.id) if post && post.errors.empty?
+        end
+      end
+
+      result
+    end
+  end
+
+  class ::NewPostManager
+    prepend CategoryModExtension
+  end
+
+  QueuedPost.class_eval do
+    def self.new_category_count(category_id = nil)
+      return nil if !category_id
+
+      new_posts.visible.select do |p|
+        p['post_options'] && p['post_options']['category'].to_i == category_id.to_i
+      end.count
+    end
+
+    def self.broadcast_category_new!(category_id)
+      msg = { total: QueuedPost.new_category_count(category_id) }
+      MessageBus.publish('/category_queue_counts', msg, user_ids: User.staff.pluck(:id))
+    end
+  end
+
+  Discourse::Application.routes.append do
+    get 'queued-posts/:filter' => 'queued_posts#index'
   end
 end

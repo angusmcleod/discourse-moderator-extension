@@ -3,3 +3,5 @@ en:
     category:
       moderators:
         label: "Category Moderators"
+    queue:
+      all: "All"

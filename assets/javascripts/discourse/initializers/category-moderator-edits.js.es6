@@ -1,5 +1,6 @@
 import { withPluginApi } from 'discourse/lib/plugin-api';
 import { observes } from 'ember-addons/ember-computed-decorators';
+import Category from 'discourse/models/category';
 import SiteHeader from 'discourse/components/site-header';
 
 export default {
@@ -10,6 +11,23 @@ export default {
     const user = container.lookup('current-user:main');
     const bus = container.lookup('message-bus:main');
 
+    withPluginApi('0.8.10', api => {
+      api.modifyClass('route:queued-posts', {
+        redirect() {
+          const moderatorCategoryId = this.get('currentUser.moderator_category_id');
+          let filter = moderatorCategoryId ? 'category' : 'all';
+          this.replaceWith('/queued-posts/' + filter);
+        },
+
+        setupController(controller) {
+          const moderatorCategoryId = this.get('currentUser.moderator_category_id');
+          if (moderatorCategoryId) {
+            controller.set('moderatorCategory', Category.findById(moderatorCategoryId));
+          }
+        }
+      });
+    });
+
     if (user && user.get('moderator_category_id')) {
 
       bus.unsubscribe('/flagged_counts');
@@ -17,16 +35,23 @@ export default {
         user.set('category_flagged_posts_count', data.total);
       });
 
+      bus.unsubscribe('/queue_counts');
+      bus.subscribe('/category_queue_counts', data => {
+        user.set('post_queue_new_category_count', data.total);
+      });
+
       SiteHeader.reopen({
         buildArgs() {
+          const flaggedPostsCount = this.get('currentUser.category_flagged_posts_count');
+          const queuedPostsCount = this.get('currentUser.post_queue_new_category_count');
           return {
-            flagCount: this.get('currentUser.category_flagged_posts_count'),
+            flagCount: flaggedPostsCount + queuedPostsCount,
             topic: this._topic,
             canSignUp: this.get('canSignUp')
           };
         },
 
-        @observes('currentUser.category_flagged_posts_count')
+        @observes('currentUser.category_flagged_posts_count', 'currentUser.post_queue_new_category_count')
         refreshCategoryFlagCount() {
           this.queueRerender();
         }
@@ -47,10 +72,10 @@ export default {
                              badgeCount: 'category_flagged_posts_count' }];
 
             if (currentUser.show_queued_posts) {
-              links.push({ route: 'queued-posts',
+              links.push({ href: '/queued-posts/category',
                            className: 'queued-posts-link',
                            label: 'queue.title',
-                           badgeCount: 'post_queue_new_count',
+                           badgeCount: 'post_queue_new_category_count',
                            badgeClass: 'queued-posts' });
             }
 
