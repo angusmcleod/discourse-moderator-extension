@@ -202,7 +202,7 @@ after_initialize do
 
   require_dependency 'group'
   class ::Group
-    after_save do
+    after_commit do
       if is_moderators?
         Group.update_site_moderators
       end
@@ -218,7 +218,7 @@ after_initialize do
       site_moderators.group_users.delete_all
 
       moderators.group_users.each do |u|
-        unless UserCustomField.exists?(user_id: u.user_id, name: 'moderator_category_id')
+        unless UserCustomField.where.not(value: nil).exists?(user_id: u.user_id, name: 'moderator_category_id')
           site_moderators.group_users.create!(user_id: u.user_id)
         end
       end
