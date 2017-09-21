@@ -17,7 +17,7 @@ after_initialize do
     end
 
     def category_moderators
-      self.custom_fields['category_moderators']
+      self.custom_fields['category_moderators'] || ''
     end
 
     def update_category_moderators
@@ -28,6 +28,8 @@ after_initialize do
         user.custom_fields['moderator_category_id'] = self.id
         user.save_custom_fields(true)
       end
+
+      Group.update_site_moderators
     end
   end
 
@@ -154,5 +156,99 @@ after_initialize do
 
   Discourse::Application.routes.append do
     get 'queued-posts/:filter' => 'queued_posts#index'
+  end
+
+  if !Group.exists?(name: 'site_moderators')
+    group = Group.new(name: 'site_moderators'.to_s, automatic: true)
+    group.default_notification_level = 2
+    group.id = 4
+    group.save!
+  end
+
+  ::Jobs::PendingFlagsReminder.class_eval do
+    def active_moderator_usernames
+      User.where(moderator: true)
+        .human_users
+        .joins(:user_custom_fields)
+        .where('moderator_category_id IS NULL')
+        .order('last_seen_at DESC')
+        .limit(3)
+        .pluck(:username)
+    end
+  end
+
+  ::Jobs::PendingQueuedPostReminder.class_eval do
+    def execute(args)
+      return true unless SiteSetting.notify_about_queued_posts_after > 0
+
+      queued_post_ids = should_notify_ids
+
+      if queued_post_ids.size > 0 && last_notified_id.to_i < queued_post_ids.max
+        PostCreator.create(
+          Discourse.system_user,
+          target_group_names: Group[:site_moderators].name,
+          archetype: Archetype.private_message,
+          subtype: TopicSubtype.system_message,
+          title: I18n.t('system_messages.queued_posts_reminder.subject_template', count: queued_post_ids.size),
+          raw: I18n.t('system_messages.queued_posts_reminder.text_body_template', base_url: Discourse.base_url)
+        )
+
+        self.last_notified_id = queued_post_ids.max
+      end
+
+      true
+    end
+  end
+
+  require_dependency 'group'
+  class ::Group
+    after_save do
+      if is_moderators?
+        Group.update_site_moderators
+      end
+    end
+
+    def is_moderators?
+      self.name == 'moderators'
+    end
+
+    def self.update_site_moderators
+      moderators = Group[:moderators]
+      site_moderators = Group[:site_moderators]
+      site_moderators.group_users.delete_all
+
+      moderators.group_users.each do |u|
+        unless UserCustomField.exists?(user_id: u.user_id, name: 'moderator_category_id')
+          site_moderators.group_users.create!(user_id: u.user_id)
+        end
+      end
+
+      site_moderators.save!
+    end
+  end
+
+  require_dependency 'User'
+  class ::User
+    after_commit :update_category_moderators
+
+    def moderator_category_id
+      self.custom_fields['moderator_category_id']
+    end
+
+    def update_category_moderators
+      if previous_changes[:moderator]
+        if moderator_category_id.to_i > 0 && !moderator
+          category = Category.find(moderator_category_id)
+          category.custom_fields['category_moderators'] = category.category_moderators
+            .split(',')
+            .reject { |u| u == self.username }
+            .join(',')
+          category.save_custom_fields(true)
+
+          self.custom_fields['moderator_category_id'] = nil
+          self.save_custom_fields(true)
+        end
+      end
+    end
   end
 end
