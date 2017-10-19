@@ -200,7 +200,6 @@ after_initialize do
     end
   end
 
-  require_dependency 'group'
   class ::Group
     after_commit do
       if is_moderators?
@@ -227,7 +226,6 @@ after_initialize do
     end
   end
 
-  require_dependency 'User'
   class ::User
     after_commit :update_category_moderators
 
