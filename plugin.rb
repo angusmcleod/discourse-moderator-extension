@@ -212,6 +212,8 @@ after_initialize do
     end
 
     def self.update_site_moderators
+      return if !Group.exists?(name: 'site_moderators')
+
       moderators = Group[:moderators]
       site_moderators = Group[:site_moderators]
       site_moderators.group_users.delete_all
