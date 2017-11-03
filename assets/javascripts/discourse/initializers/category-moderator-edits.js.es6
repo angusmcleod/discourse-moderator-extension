@@ -63,7 +63,7 @@ export default {
             const { currentUser } = this;
 
             const links = [{ route: 'admin', className: 'admin-link', icon: 'wrench', label: 'admin_title' },
-                           { href: '/admin/flags/category',
+                           { href: '/admin/flags',
                              className: 'flagged-posts-link',
                              icon: 'flag',
                              label: 'flags_title',
@@ -91,36 +91,33 @@ export default {
         });
       });
 
-      const AdminFlagIndexRoute = requirejs('admin/routes/admin-flags-index').default;
-      const AdminFlagListRoute = requirejs('admin/routes/admin-flags-list').default;
-      const AdminFlagListController = requirejs('admin/controllers/admin-flags-list').default;
+      const AdminFlagsPostsActiveRoute = requirejs('admin/routes/admin-flags-posts-active').default;
+      const AdminFlagsPostsOldRoute = requirejs('admin/routes/admin-flags-posts-old').default;
+      const AdminFlagsTopicsIndexRoute = requirejs('admin/routes/admin-flags-topics-index').default;
 
-      AdminFlagIndexRoute.reopen({
-        redirect() {
-          const moderatorCategoryId = this.get('currentUser.moderator_category_id');
-          let filter = moderatorCategoryId ? 'category' : 'active';
-          this.replaceWith('adminFlags.list', filter);
-        }
-      });
+      const categoryModFilter = function(categoryId, items) {
+        return items.filter((item) => item.topic.category_id === categoryId);
+      };
 
-      AdminFlagListRoute.reopen({
+      AdminFlagsPostsActiveRoute.reopen({
         setupController(controller, model) {
-          const moderatorCategoryId = this.get('currentUser.moderator_category_id');
-          let posts = model;
-
-          if (this.filter === 'category' && moderatorCategoryId) {
-            posts = model.filter((p) => {
-              return p.topicLookup[p.topic_id].category_id === moderatorCategoryId;
-            });
-          }
-
-          controller.set('model', posts);
-          controller.set('query', this.filter);
+          const categoryId = this.get('currentUser.moderator_category_id');
+          controller.set('model', categoryModFilter(categoryId, model));
         }
       });
 
-      AdminFlagListController.reopen({
-        adminCategoryFlagsView: Em.computed.equal("query", "category")
+      AdminFlagsPostsOldRoute.reopen({
+        setupController(controller, model) {
+          const categoryId = this.get('currentUser.moderator_category_id');
+          controller.set('model', categoryModFilter(categoryId, model));
+        }
+      });
+
+      AdminFlagsTopicsIndexRoute.reopen({
+        setupController(controller, model) {
+          const categoryId = this.get('currentUser.moderator_category_id');
+          controller.set('flaggedTopics', categoryModFilter(categoryId, model));
+        }
       });
     }
   }
