@@ -33,6 +33,9 @@ after_initialize do
     end
   end
 
+  add_to_serializer(:basic_category, :moderators) { object.category_moderators }
+  add_to_serializer(:basic_category, :include_moderators?) { object.has_category_moderators? }
+
   require_dependency 'current_user_serializer'
   CurrentUserSerializer.class_eval do
     attributes :moderator_category_id,
