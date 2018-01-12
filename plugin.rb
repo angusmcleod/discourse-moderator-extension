@@ -2,6 +2,7 @@
 # about: Allows moderators to be assigned to categories to triage moderation
 # version: 0.1
 # authors: Angus McLeod
+# url: https://github.com/angusmcleod/discourse-category-moderator-lite
 
 register_asset 'stylesheets/category-moderator.scss'
 
