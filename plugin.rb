@@ -11,7 +11,7 @@ after_initialize do
 
   require_dependency 'category'
   Category.class_eval do
-    after_save :update_category_moderators, if: :category_moderators
+    after_save :update_category_moderators, if: :has_category_moderators?
 
     def has_category_moderators?
       category_moderators && category_moderators.length > 0
@@ -22,13 +22,21 @@ after_initialize do
     end
 
     def update_category_moderators
-      UserCustomField.where(name: 'moderator_category_id', value: self.id).destroy_all
+      first = true
+      existing_moderators = UserCustomField.where(name: 'moderator_category_id', value: self.id)
+
+      if existing_moderators.exists?
+        existing_moderators.destroy_all
+        first = false
+      end
 
       category_moderators.split(',').each do |u|
         user = User.find_by(username: u)
         user.custom_fields['moderator_category_id'] = self.id
         user.save_custom_fields(true)
       end
+
+      DiscourseEvent.trigger(:category_moderators_updated, self, first)
 
       Group.update_site_moderators
     end
