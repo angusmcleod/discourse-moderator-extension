@@ -16,7 +16,7 @@ en:
             label: "Type"
             default:
               label: "Default"
-              description: Standard Discourse moderator
+              description: Standard Discourse moderator.
             filtered:
               label: "Filtered"
               description: |
