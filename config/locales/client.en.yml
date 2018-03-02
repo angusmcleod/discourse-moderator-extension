@@ -1,7 +1,37 @@
 en:
   js:
     category:
-      moderators:
-        label: "Category Moderators"
-    queue:
-      all: "All"
+      moderators: "Moderators"
+      moderator_list: "Show a list of moderators assigned to this category."
+
+    moderator:
+      category_label: "For Categories"
+
+  admin_js:
+    admin:
+      user:
+        moderation:
+          label: "Moderation"
+          type:
+            label: "Moderator Type"
+            default:
+              label: "Default"
+              description: |
+                * Will receive notifications about all moderation actions.
+                * Lists of moderation actions will show all moderation actions.
+                * Can act on all moderation actions.
+            filtered:
+              label: "Filtered"
+              description: |
+                * Will receive notifications about moderation actions in assigned categories.
+                * Lists of moderation actions will be filtered by assigned categories.
+                * Can act on moderation actions in all categories.
+            restricted:
+              label: "Restricted"
+              description: |
+                * Will receive notifications about moderation actions in assigned categories.
+                * Lists of moderation actions will be filtered by assigned categories.
+                * Can only act on moderation actions from assigned categories.
+          categories:
+            label: "Moderator Categories"
+            description: "Categories to which moderator is assigned."

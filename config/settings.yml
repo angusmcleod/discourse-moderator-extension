@@ -1,0 +1,4 @@
+plugins:
+  moderator_extension_show_category_list:
+    default: false
+    client: true

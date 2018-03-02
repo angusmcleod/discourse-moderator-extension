@@ -1,10 +1,13 @@
-{{#admin-nav}}
-  {{#if moderatorCategory}}
-    {{nav-item route='queued-posts.list' routeParam='category' i18nLabel=(category-badge moderatorCategory)}}
-  {{/if}}
-  {{nav-item route='queued-posts.list' routeParam='all' label='queue.all'}}
-{{/admin-nav}}
+{{moderator-categories-list}}
 
-<div class="admin-container">
-  {{outlet}}
+<div class='container'>
+  <div class='queued-posts'>
+    {{#each model as |post|}}
+      {{queued-post post=post currentlyEditing=editing removePost="removePost"}}
+    {{else}}
+      <p>{{i18n "queue.none"}}</p>
+    {{/each}}
+
+    {{d-button action="refresh" label="refresh" icon="refresh" disabled=model.refreshing id='refresh-queued'}}
+  </div>
 </div>

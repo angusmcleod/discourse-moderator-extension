@@ -1,0 +1,8 @@
+{{#if showList}}
+  <div class="container">
+    <label>{{i18n 'moderator.category_label'}}</label>
+    {{#each categories as |c|}}
+      {{category-badge c}}
+    {{/each}}
+  </div>
+{{/if}}

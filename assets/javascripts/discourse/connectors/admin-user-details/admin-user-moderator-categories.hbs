@@ -1,0 +1,35 @@
+{{#if model.moderator}}
+  <section class='details moderation'>
+    <h1>{{i18n 'admin.user.moderation.label'}}</h1>
+    <div class='display-row moderator-type'>
+      <div class='field'>{{i18n 'admin.user.moderation.type.label'}}</div>
+      {{#if currentUser.admin}}
+        {{admin-moderator-type user=model}}
+      {{else}}
+        <div class='value'>
+          {{moderator-type-text type=model.moderator_type key='label'}}
+        </div>
+        <div class="controls">
+          {{moderator-type-text type=model.moderator_type key='description'}}
+        </div>
+      {{/if}}
+    </div>
+    <div class='display-row moderator-categories'>
+      <div class='field'>{{i18n 'admin.user.moderation.categories.label'}}</div>
+      {{#if currentUser.admin}}
+        <div class='value'>
+          {{admin-moderator-categories user=model}}
+        </div>
+        <div class="controls">
+          {{i18n 'admin.user.moderation.categories.description'}}
+        </div>
+      {{else}}
+        <div class='value'>
+          {{#each categories as |c|}}
+            {{category-badge c}}
+          {{/each}}
+        </div>
+      {{/if}}
+    </div>
+  </section>
+{{/if}}

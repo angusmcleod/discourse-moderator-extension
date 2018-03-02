@@ -1,0 +1,37 @@
+.moderation .display-row {
+  align-items: initial;
+
+  .value .category-selector {
+    width: 250px;
+  }
+}
+
+.moderator-categories-list .container {
+  padding: 15px 0;
+}
+
+.admin-content .moderator-categories-list .container {
+  padding: 0 23px 17px 23px;
+}
+
+.moderator-categories-list .container {
+  font-size: 1.1487em;
+
+  label {
+    margin-right: 10px;
+    display: inline-block;
+  }
+}
+
+.moderator-list {
+  display: inline-block;
+  margin-bottom: 5px;
+
+  span {
+    margin-right: 5px;
+  }
+
+  a {
+    margin-right: 5px;
+  }
+}

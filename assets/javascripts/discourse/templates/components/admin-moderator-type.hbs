@@ -1,0 +1,12 @@
+<div class='value'>
+  {{combo-box content=moderatorTypes value=type}}
+  {{#if showSave}}
+    <div>
+      {{d-button class="ok no-text" action="saveType" icon="check"}}
+      {{d-button class="cancel no-text" action="restoreType" icon="times"}}
+    </div>
+  {{/if}}
+</div>
+<div class="controls">
+  {{moderator-type-text type=type key='description'}}
+</div>
