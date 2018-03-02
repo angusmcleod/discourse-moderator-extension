@@ -11,7 +11,7 @@ en:
     admin:
       user:
         moderation:
-          label: "Moderator"
+          label: "Moderation"
           type:
             label: "Type"
             default:
