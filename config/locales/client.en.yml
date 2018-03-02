@@ -11,9 +11,9 @@ en:
     admin:
       user:
         moderation:
-          label: "Moderation"
+          label: "Moderator"
           type:
-            label: "Moderator Type"
+            label: "Type"
             default:
               label: "Default"
               description: Standard Discourse moderator
@@ -30,5 +30,5 @@ en:
                 * Lists of flags and queued posts will be filtered by assigned categories.
                 * Powers concerning categories, topics, users and posts are restricted to assigned categories.
           categories:
-            label: "Moderator Categories"
+            label: "Categories"
             description: "Categories to which moderator is assigned."
