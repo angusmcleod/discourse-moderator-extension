@@ -16,22 +16,19 @@ en:
             label: "Moderator Type"
             default:
               label: "Default"
-              description: |
-                * Will receive notifications about all moderation actions.
-                * Lists of moderation actions will show all moderation actions.
-                * Can act on all moderation actions.
+              description: Standard Discourse moderator
             filtered:
               label: "Filtered"
               description: |
-                * Will receive notifications about moderation actions in assigned categories.
-                * Lists of moderation actions will be filtered by assigned categories.
-                * Can act on moderation actions in all categories.
+                * Will only receive notifications and reminders about flags and queued posts for assigned categories.
+                * Lists of flags and queued posts will be filtered by assigned categories.
+                * Has all other powers of a standard Discourse moderator.
             restricted:
               label: "Restricted"
               description: |
-                * Will receive notifications about moderation actions in assigned categories.
-                * Lists of moderation actions will be filtered by assigned categories.
-                * Can only act on moderation actions from assigned categories.
+                * Will only receive notifications and reminders about flags and queued posts for assigned categories.
+                * Lists of flags and queued posts will be filtered by assigned categories.
+                * Powers concerning categories, topics, users and posts are restricted to assigned categories.
           categories:
             label: "Moderator Categories"
             description: "Categories to which moderator is assigned."
