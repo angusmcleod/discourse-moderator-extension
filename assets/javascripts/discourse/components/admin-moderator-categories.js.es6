@@ -17,6 +17,7 @@ export default Ember.Component.extend({
 
   @computed('categories', 'user.moderator_category_ids')
   showSave(categories, initialIds) {
+    if (!categories) return false;
     const categoryIds = categories.map((c) => c.id);
     return !_.isEqual(initialIds, categoryIds);
   },
