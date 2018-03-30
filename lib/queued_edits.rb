@@ -104,13 +104,16 @@ class ::Jobs::PendingQueuedPostReminder
     if category_moderators.any?
       category_moderators.each do |user|
         relevant = queued.select { |q| user.moderator_category_ids.include?(q[:category_id]) }
-        count = relevant.size
-        targets = [user.username]
-        last_post_id = relevant.last[:post_id].to_i
 
-        if get_last_notified_id_user(user.id).to_i < last_post_id && count > 0
-          send_reminder(targets, count)
-          set_last_notified_id_user(user.id, last_post_id)
+        if relevant.any?
+          count = relevant.size
+          targets = [user.username]
+          last_post_id = relevant.last[:post_id].to_i
+
+          if get_last_notified_id_user(user.id).to_i < last_post_id && count > 0
+            send_reminder(targets, count)
+            set_last_notified_id_user(user.id, last_post_id)
+          end
         end
       end
     end
@@ -139,7 +142,7 @@ class ::Jobs::PendingQueuedPostReminder
 
   def should_notify
     QueuedPost.new_posts.visible
-      .where('topics.created_at < ?', SiteSetting.notify_about_queued_posts_after.hours.ago)
+      .where('created_at < ?', SiteSetting.notify_about_queued_posts_after.hours.ago)
       .pluck(:id, :post_options)
       .map { |item| { post_id: item[0], category_id: item[1]['category'].to_i } }
   end

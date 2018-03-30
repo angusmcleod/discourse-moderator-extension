@@ -115,13 +115,16 @@ class ::Jobs::PendingFlagsReminder
     if category_moderators.any?
       category_moderators.each do |user|
         relevant = flagged.select { |f| user.moderator_category_ids.include?(f[:category_id]) }
-        count = relevant.size
-        targets = [user.username]
-        last_action_id = relevant.last[:action_id].to_i
 
-        if get_last_notified_id_user(user.id).to_i < last_action_id && count > 0
-          send_reminder(targets, count)
-          set_last_notified_id_user(user.id, last_action_id)
+        if relevant.any?
+          count = relevant.size
+          targets = [user.username]
+          last_action_id = relevant.last[:action_id].to_i
+
+          if get_last_notified_id_user(user.id).to_i < last_action_id && count > 0
+            send_reminder(targets, count)
+            set_last_notified_id_user(user.id, last_action_id)
+          end
         end
       end
     end
