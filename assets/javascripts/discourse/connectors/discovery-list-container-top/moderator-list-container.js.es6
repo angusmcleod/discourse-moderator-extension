@@ -17,6 +17,8 @@ export default {
       const category = controller.get('category');
       if (category) {
         setShowModeratorList(category);
+      } else {
+        component.set('showModeratorList', false);
       }
     });
   }
