@@ -19,6 +19,8 @@ export default {
     const controller = getOwner(this).lookup('controller:discovery');
 
     controller.addObserver('application.currentRouteName', () => {
+      if (this._state === 'destroying') return;
+
       const currentRoute = controller.get('application.currentRouteName');
       const category = controller.get('category');
 
