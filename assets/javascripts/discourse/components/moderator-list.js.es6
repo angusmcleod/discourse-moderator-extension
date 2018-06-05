@@ -9,7 +9,7 @@ export default Ember.Component.extend({
   @computed('category.category_moderators')
   moderators(moderators) {
     if (!moderators) return [];
-    return moderators.map((m) => {
+    return moderators.filter(m => m).map((m) => {
       Ember.set(m, 'url', userPath(m.username));
       return m;
     });
@@ -17,7 +17,7 @@ export default Ember.Component.extend({
 
   @computed('category', 'listLoading', 'currentRoute')
   showList(category, listLoading, currentRoute) {
-    return currentRoute.indexOf('categories') === -1;
+    return currentRoute.indexOf('categories') === -1 &&
            !listLoading &&
            category &&
            category.category_moderators &&
