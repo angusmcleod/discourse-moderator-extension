@@ -3,6 +3,8 @@ import { userPath } from 'discourse/lib/url';
 
 export default Ember.Component.extend({
   classNames: 'moderator-list',
+  router: Ember.inject.service('-routing'),
+  currentRoute: Ember.computed.alias('router.router.currentRouteName'),
 
   @computed('category.category_moderators')
   moderators(moderators) {
@@ -13,9 +15,10 @@ export default Ember.Component.extend({
     });
   },
 
-  @computed('category', 'listLoading')
-  showList(category, listLoading) {
-    return !listLoading &&
+  @computed('category', 'listLoading', 'currentRoute')
+  showList(category, listLoading, currentRoute) {
+    return currentRoute.indexOf('categories') === -1;
+           !listLoading &&
            category &&
            category.category_moderators &&
            (category.moderator_list ||
