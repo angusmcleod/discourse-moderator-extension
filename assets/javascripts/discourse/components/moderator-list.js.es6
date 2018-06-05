@@ -11,5 +11,14 @@ export default Ember.Component.extend({
       Ember.set(m, 'url', userPath(m.username));
       return m;
     });
+  },
+
+  @computed('category', 'listLoading')
+  showList(category, listLoading) {
+    return !listLoading &&
+           category &&
+           category.category_moderators &&
+           (category.moderator_list ||
+            Discourse.SiteSettings.moderator_extension_show_category_list);
   }
 });
