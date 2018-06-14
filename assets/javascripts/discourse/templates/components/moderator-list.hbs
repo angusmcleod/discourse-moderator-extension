@@ -1,8 +1,10 @@
 {{#if showList}}
-  <span>{{i18n 'category.moderators'}}</span>
-  {{#each moderators as |m|}}
-    <a href={{m.url}} data-user-card={{m.username}} class='avatar-link'>
-      <div class='avatar-wrapper'>{{avatar m imageSize="small"}}</div>
-    </a>
-  {{/each}}
+  <div class='moderator-list'>
+    <span>{{i18n 'category.moderators'}}</span>
+    {{#each moderators as |m|}}
+      <a href={{m.url}} data-user-card={{m.username}} class='avatar-link'>
+        <div class='avatar-wrapper'>{{avatar m imageSize="small"}}</div>
+      </a>
+    {{/each}}
+  </div>
 {{/if}}

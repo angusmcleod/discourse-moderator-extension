@@ -2,7 +2,6 @@ import { default as computed } from 'ember-addons/ember-computed-decorators';
 import { userPath } from 'discourse/lib/url';
 
 export default Ember.Component.extend({
-  classNames: 'moderator-list',
   router: Ember.inject.service('-routing'),
   currentRoute: Ember.computed.alias('router.router.currentRouteName'),
 
