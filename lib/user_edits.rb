@@ -15,7 +15,7 @@ class ::User
   after_commit :update_moderation
 
   def moderator_type
-    if moderator && self.custom_fields['moderator_type']
+    if self.custom_fields['moderator_type']
       self.custom_fields['moderator_type']
     elsif moderator
       1
@@ -25,7 +25,7 @@ class ::User
   end
 
   def category_moderator
-    if moderator && moderator_type
+    if moderator_category_ids.any? && moderator_type
       moderator_type === ModeratorExtension.types[:filtered] ||
       moderator_type === ModeratorExtension.types[:restricted]
     else
@@ -39,11 +39,17 @@ class ::User
 
   def update_moderation
     if previous_changes[:moderator]
-      if !moderator && category_moderator
-        moderator_category_ids.each do |category_id|
-          Category.remove_from_moderators(category_id, self.username)
+      if !moderator
+        if moderator_category_ids.any?
+          moderator_category_ids.each do |category_id|
+            Category.remove_from_moderators(category_id, self.username)
+          end
+          UserCustomField.where(user_id: self.id, name: 'moderator_category_id').delete_all
         end
-        UserCustomField.where(user_id: self.id, name: 'moderator_category_id').delete_all
+
+        if moderator_type.present?
+          UserCustomField.where(user_id: self.id, name: 'moderator_type').delete_all
+        end
       end
     end
   end
