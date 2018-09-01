@@ -41,9 +41,6 @@ class ::User
     if previous_changes[:moderator]
       if !moderator
         if moderator_category_ids.any?
-          moderator_category_ids.each do |category_id|
-            Category.remove_from_moderators(category_id, self.username)
-          end
           UserCustomField.where(user_id: self.id, name: 'moderator_category_id').delete_all
         end
 
@@ -140,24 +137,8 @@ class Admin::UsersController
     fetch_user
     guardian.ensure_can_update_moderation!(@user)
 
-    new_ids = params[:category_ids].present? ? params[:category_ids].map(&:to_i) : []
-    old_ids = @user.moderator_category_ids
-    remove_ids = old_ids - new_ids
-    add_ids = new_ids - old_ids
-
-    if remove_ids.any?
-      remove_ids.each do |category_id|
-        Category.remove_from_moderators(category_id, @user.username)
-      end
-    end
-
-    if add_ids.any?
-      add_ids.each do |category_id|
-        Category.add_to_moderators(category_id, @user.username)
-      end
-    end
-
-    @user.custom_fields['moderator_category_id'] = new_ids
+    ids = params[:category_ids].present? ? params[:category_ids].map(&:to_i) : []
+    @user.custom_fields['moderator_category_id'] = ids
     @user.save_custom_fields(true)
 
     updated_ids = @user.reload.moderator_category_ids

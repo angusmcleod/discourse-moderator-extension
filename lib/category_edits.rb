@@ -7,10 +7,8 @@ class ::Category
   end
 
   def category_moderators
-    if self.custom_fields['category_moderators']
-      self.custom_fields['category_moderators']
-    else
-      ''
+    UserCustomField.where(name: 'moderator_category_id', value: self.id).map do |record|
+      User.find_by(id: record.user_id)
     end
   end
 
@@ -21,24 +19,6 @@ class ::Category
       false
     end
   end
-
-  def self.remove_from_moderators(category_id, username)
-    category = Category.find(category_id)
-    category.custom_fields['category_moderators'] = category.category_moderators
-      .split(',')
-      .reject { |u| u == username }
-      .join(',')
-    category.save_custom_fields(true)
-  end
-
-  def self.add_to_moderators(category_id, username)
-    category = Category.find(category_id)
-    current = category.category_moderators.split(',')
-    unless current.include?(username)
-      category.custom_fields['category_moderators'] = current.push(username).join(',')
-      category.save_custom_fields(true)
-    end
-  end
 end
 
 require_dependency 'basic_category_serializer'
@@ -46,8 +26,8 @@ class BasicCategorySerializer
   attributes :category_moderators, :moderator_list
 
   def category_moderators
-    object.category_moderators.split(',').map do |username|
-      BasicUserSerializer.new(User.find_by(username: username), scope: scope, root: false)
+    object.category_moderators.map do |user|
+      BasicUserSerializer.new(user, scope: scope, root: false)
     end
   end
 
