@@ -16,7 +16,7 @@ export default Ember.Component.extend({
   },
 
   @on('didInsertElement')
-  @observes('user.moderator_category_ids')
+  @observes('user')
   test() {
     console.log(this.get('user.moderator_category_ids'));
   },
