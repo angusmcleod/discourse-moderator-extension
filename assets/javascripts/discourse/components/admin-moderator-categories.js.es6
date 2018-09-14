@@ -1,4 +1,4 @@
-import { default as computed, on, observes } from 'ember-addons/ember-computed-decorators';
+import { default as computed, on } from 'ember-addons/ember-computed-decorators';
 import Category from 'discourse/models/category';
 import { popupAjaxError } from 'discourse/lib/ajax-error';
 import { ajax } from 'discourse/lib/ajax';
@@ -13,12 +13,6 @@ export default Ember.Component.extend({
       const categories = categoryIds.map((id) => Category.findById(id));
       this.set('categories', categories);
     }
-  },
-
-  @on('didInsertElement')
-  @observes('user')
-  test() {
-    console.log(this.get('user'));
   },
 
   @computed('categories', 'user.moderator_category_ids')
