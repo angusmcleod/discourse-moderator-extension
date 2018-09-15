@@ -160,10 +160,7 @@ class Admin::UsersController
   end
 end
 
-require_dependency 'admin_user_list_serializer'
-class AdminUserListSerializer
-  attributes :moderator_type, :category_moderator, :moderator_category_ids
-
+module AdminUserSerializerExtension
   def moderator_type
     object.moderator_type
   end
@@ -175,4 +172,16 @@ class AdminUserListSerializer
   def moderator_category_ids
     object.moderator_category_ids
   end
+end
+
+require_dependency 'admin_user_list_serializer'
+class AdminUserListSerializer
+  attributes :moderator_type, :category_moderator, :moderator_category_ids
+  prepend AdminUserSerializerExtension
+end
+
+require_dependency 'admin_detailed_user_serializer'
+class AdminDetailedUserSerializer
+  attributes :moderator_type, :category_moderator, :moderator_category_ids
+  prepend AdminUserSerializerExtension
 end
