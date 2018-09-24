@@ -10,7 +10,7 @@ export default Ember.Component.extend({
   setup() {
     const categoryIds = this.get('user.moderator_category_ids');
     if (categoryIds) {
-      const categories = categoryIds.map((id) => Category.findById(id));
+      const categories = categoryIds.map((id) => Category.findById(id)).filter(c => c && c.id);
       this.set('categories', categories);
     }
   },
