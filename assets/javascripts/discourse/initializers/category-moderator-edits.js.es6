@@ -26,11 +26,9 @@ export default {
         buildArgs() {
           const flaggedCounts = user.get('flagged_posts_category_counts_total');
           const queuedCounts = user.get('post_queue_new_category_counts_total');
-          return {
-            flagCount: flaggedCounts + queuedCounts,
-            topic: this._topic,
-            canSignUp: this.get('canSignUp')
-          };
+          return $.extend({}, this._super(), {
+            flagCount: flaggedCounts + queuedCounts
+          });
         },
 
         @observes('currentUser.flagged_posts_category_counts_total', 'currentUser.post_queue_new_category_counts_total')
