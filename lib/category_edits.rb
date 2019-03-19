@@ -21,6 +21,8 @@ class ::Category
   end
 end
 
+Site.preloaded_category_custom_fields << 'moderator_list' if Site.respond_to? :preloaded_category_custom_fields
+
 require_dependency 'basic_category_serializer'
 class BasicCategorySerializer
   attributes :category_moderators, :moderator_list
